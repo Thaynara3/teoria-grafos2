@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include "dag.h"
 
 GrafoLista* criar_grafo(int vertices) {
