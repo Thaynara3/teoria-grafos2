@@ -14,8 +14,8 @@ int main() {
     adicionar_aresta(g, 2, 3, 4);
     adicionar_aresta(g, 2, 4, 10);
     adicionar_aresta(g, 3, 4, 2);
-    adicionar_aresta(g, 3, 5, 1);
-    adicionar_aresta(g, 4, 5, 3);
+    adicionar_aresta(g, 3, 5, 5);
+    adicionar_aresta(g, 4, 5, 2);
 
     int dist[6];
     int pred[6];
