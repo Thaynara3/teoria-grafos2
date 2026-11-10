@@ -4,52 +4,44 @@
 #include <time.h>
 #include "cobertura.h"
 
-void gerar_grafo_aleatorio(GrafoLista* g, double probabilidade) {
-    int n = g->num_vertices;
-    for (int i = 0; i < n; i++) {
-        for (int j = i + 1; j < n; j++) {
-            if ((double)rand() / RAND_MAX < probabilidade) {
-                adicionar_aresta(g, i, j);
-            }
-        }
-    }
+void montar_grafo_slide(GrafoLista* g) {
+    adicionar_aresta(g, 0, 1); 
+    adicionar_aresta(g, 0, 2); 
+    adicionar_aresta(g, 1, 2); 
+    adicionar_aresta(g, 1, 3); 
+    adicionar_aresta(g, 1, 4); 
+    adicionar_aresta(g, 2, 3); 
+    adicionar_aresta(g, 2, 4); 
+    adicionar_aresta(g, 3, 4); 
+    adicionar_aresta(g, 3, 5); 
+    adicionar_aresta(g, 4, 5); 
 }
 
 int main() {
-    srand(42);
-
     printf("=== PRATICA 09: COBERTURA DE VERTICES ===\n\n");
 
-    int tamanhos[] = {5, 8, 10, 12, 15};
-    int qtd_tamanhos = sizeof(tamanhos) / sizeof(tamanhos[0]);
+    int n = 6; 
+    GrafoLista* g = criar_grafo(n);
+    montar_grafo_slide(g);
 
-    printf("%-5s | %-15s | %-15s | %-12s | %-12s\n", "N", "Tam (BT)", "Tam (Guloso)", "Tempo BT (ms)", "Tempo Gul (ms)");
-    printf("--------------------------------------------------------------------------------\n");
+    bool atual[MAX_VERTICES] = {false};
+    bool melhor_bt[MAX_VERTICES] = {false};
+    int melhor_tam_bt = n + 1;
 
-    for (int k = 0; k < qtd_tamanhos; k++) {
-        int n = tamanhos[k];
-        GrafoLista* g = criar_grafo(n);
-        gerar_grafo_aleatorio(g, 0.4);
+    clock_t inicio_bt = clock();
+    cobertura_minima_bt(g, 0, atual, 0, melhor_bt, &melhor_tam_bt);
+    clock_t fim_bt = clock();
+    double tempo_bt = ((double)(fim_bt - inicio_bt) / CLOCKS_PER_SEC) * 1000.0;
 
-        bool atual[MAX_VERTICES] = {false};
-        bool melhor_bt[MAX_VERTICES] = {false};
-        int melhor_tam_bt = n + 1;
+    bool resultado_guloso[MAX_VERTICES] = {false};
+    clock_t inicio_gul = clock();
+    int tam_guloso = cobertura_gulosa(g, resultado_guloso);
+    clock_t fim_gul = clock();
+    double tempo_gul = ((double)(fim_gul - inicio_gul) / CLOCKS_PER_SEC) * 1000.0;
 
-        clock_t inicio_bt = clock();
-        cobertura_minima_bt(g, 0, atual, 0, melhor_bt, &melhor_tam_bt);
-        clock_t fim_bt = clock();
-        double tempo_bt = ((double)(fim_bt - inicio_bt) / CLOCKS_PER_SEC) * 1000.0;
+    printf("Tamanho Cobertura Minima (BT): %d\n", melhor_tam_bt);
+    printf("Tamanho Cobertura (Gulosa): %d\n", tam_guloso);
 
-        bool resultado_guloso[MAX_VERTICES] = {false};
-        clock_t inicio_gul = clock();
-        int tam_guloso = cobertura_gulosa(g, resultado_guloso);
-        clock_t fim_gul = clock();
-        double tempo_gul = ((double)(fim_gul - inicio_gul) / CLOCKS_PER_SEC) * 1000.0;
-
-        printf("%-5d | %-15d | %-15d | %-12.4f | %-12.4f\n", n, melhor_tam_bt, tam_guloso, tempo_bt, tempo_gul);
-
-        liberar_grafo(g);
-    }
-
+    liberar_grafo(g);
     return 0;
 }
